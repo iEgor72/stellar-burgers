@@ -33,7 +33,7 @@ type TRefreshResponse = TServerResponse<{
   accessToken: string;
 }>;
 
-export const refreshToken = (): Promise<TRefreshResponse> =>
+const requestRefreshToken = (): Promise<TRefreshResponse> =>
   fetch(`${URL}/auth/token`, {
     method: 'POST',
     headers: {
@@ -53,6 +53,14 @@ export const refreshToken = (): Promise<TRefreshResponse> =>
       return refreshData;
     });
 
+let refreshRequest: Promise<TRefreshResponse> | null = null;
+export const refreshToken = (): Promise<TRefreshResponse> => {
+  refreshRequest ??= requestRefreshToken().finally(() => {
+    refreshRequest = null;
+  });
+  return refreshRequest;
+};
+
 export const fetchWithRefresh = async <T>(
   url: RequestInfo,
   options: RequestInit
@@ -63,11 +71,9 @@ export const fetchWithRefresh = async <T>(
   } catch (err) {
     if ((err as { message: string }).message === 'jwt expired') {
       const refreshData = await refreshToken();
-      if (options.headers) {
-        (options.headers as Record<string, string>).authorization =
-          refreshData.accessToken;
-      }
-      const res = await fetch(url, options);
+      const headers = new Headers(options.headers);
+      headers.set('authorization', refreshData.accessToken);
+      const res = await fetch(url, { ...options, headers });
       return await checkResponse<T>(res);
     } else {
       return Promise.reject(toApiError(err));
