@@ -1,12 +1,25 @@
 import { ProfileUI } from '@ui-pages';
 import { type SyntheticEvent, useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
+
+import { selectUser } from '@services/selectors';
+import { updateUser } from '@services/slices/user';
+import { useDispatch, useSelector } from '@services/store';
+
+import type { TUser } from '@utils-types';
 
 export const Profile = (): React.JSX.Element => {
-  /** TODO: Взять переменную из стора */
-  const user = {
-    name: '',
-    email: '',
-  };
+  const user = useSelector(selectUser);
+  if (!user) return <Navigate to="/login" replace />;
+  return <ProfileForm user={user} />;
+};
+
+const ProfileForm = ({ user }: { user: TUser }): React.JSX.Element => {
+  const dispatch = useDispatch();
+  const isLoading = useSelector((state) => state.user.isLoading);
+  const error = useSelector((state) =>
+    state.user.errorAction === updateUser.rejected.type ? state.user.error : null
+  );
 
   const [formValue, setFormValue] = useState({
     name: user.name,
@@ -29,6 +42,17 @@ export const Profile = (): React.JSX.Element => {
 
   const handleSubmit = (e: SyntheticEvent): void => {
     e.preventDefault();
+    if (isLoading) return;
+    void dispatch(
+      updateUser({
+        name: formValue.name,
+        email: formValue.email,
+        ...(formValue.password ? { password: formValue.password } : {}),
+      })
+    )
+      .unwrap()
+      .then(() => setFormValue((value) => ({ ...value, password: '' })))
+      .catch(() => undefined);
   };
 
   const handleCancel = (e: SyntheticEvent): void => {
@@ -48,12 +72,16 @@ export const Profile = (): React.JSX.Element => {
   };
 
   return (
-    <ProfileUI
-      formValue={formValue}
-      isFormChanged={isFormChanged}
-      handleCancel={handleCancel}
-      handleSubmit={handleSubmit}
-      handleInputChange={handleInputChange}
-    />
+    <>
+      {error && <p role="alert">{error}</p>}
+      <ProfileUI
+        formValue={formValue}
+        isFormChanged={isFormChanged}
+        handleCancel={handleCancel}
+        handleSubmit={handleSubmit}
+        isLoading={isLoading}
+        handleInputChange={handleInputChange}
+      />
+    </>
   );
 };

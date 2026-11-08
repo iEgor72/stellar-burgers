@@ -1,10 +1,16 @@
+import { Preloader } from '@ui';
 import { ProfileOrdersUI } from '@ui-pages';
 
-import type { TOrder } from '@utils-types';
-
+import { useSelector } from '@services/store';
+import { useOrders } from '@services/use-orders';
 export const ProfileOrders = (): React.JSX.Element => {
-  /** TODO: взять переменную из стора */
-  const orders: TOrder[] = [];
-
-  return <ProfileOrdersUI orders={orders} />;
+  const { items, isLoading, error } = useSelector((state) => state.orders);
+  useOrders(true);
+  if (isLoading && !items.length) return <Preloader />;
+  return (
+    <>
+      {error && <p role="alert">{error}</p>}
+      <ProfileOrdersUI orders={items} />
+    </>
+  );
 };
