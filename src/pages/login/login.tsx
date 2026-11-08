@@ -8,7 +8,7 @@ export const Login = (): React.JSX.Element => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.user.isLoading);
   const error = useSelector((state) =>
-    state.user.errorAction === 'user/login/rejected' ? state.user.error : null
+    state.user.errorAction === login.rejected.type ? state.user.error : null
   );
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

@@ -20,7 +20,7 @@ import {
   type Location,
 } from 'react-router-dom';
 
-import { loadIngredients } from '@services/slices/data';
+import { loadIngredients } from '@services/slices/ingredients';
 import { checkUser } from '@services/slices/user';
 import { useDispatch, useSelector } from '@services/store';
 

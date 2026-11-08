@@ -6,11 +6,10 @@ import {
   logoutApi,
   forgotPasswordApi,
   resetPasswordApi,
-  refreshToken,
 } from '@api';
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 
-import { setCookie, getCookie, deleteCookie } from '@utils/cookie';
+import { setCookie, deleteCookie } from '@utils/cookie';
 
 import type { TLoginData, TRegisterData } from '@api';
 import type { TUser } from '@utils-types';
@@ -32,7 +31,6 @@ export const register = createAsyncThunk('user/register', async (data: TRegister
 export const checkUser = createAsyncThunk('user/check', async () => {
   if (!localStorage.getItem('refreshToken')) return null;
   try {
-    if (!getCookie('accessToken')) await refreshToken();
     return (await getUserApi()).user;
   } catch {
     deleteCookie('accessToken');

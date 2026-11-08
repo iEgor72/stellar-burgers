@@ -8,7 +8,7 @@ export const ProfileMenu = (): React.JSX.Element => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.user.isLoading);
   const error = useSelector((state) =>
-    state.user.errorAction === 'user/logout/rejected' ? state.user.error : null
+    state.user.errorAction === logout.rejected.type ? state.user.error : null
   );
   const { pathname } = useLocation();
 

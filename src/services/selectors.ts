@@ -5,3 +5,11 @@ export const selectConstructor = (state: RootState): RootState['burgerConstructo
   state.burgerConstructor;
 export const selectUser = (state: RootState): RootState['user']['user'] =>
   state.user.user;
+
+export const selectCachedOrder = (
+  state: RootState,
+  number: number
+): RootState['order']['details'] =>
+  state.orders.items.find((order) => order.number === number) ??
+  state.feed.orders.find((order) => order.number === number) ??
+  null;

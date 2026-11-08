@@ -1,16 +1,24 @@
 import { ProfileUI } from '@ui-pages';
 import { type SyntheticEvent, useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 
 import { selectUser } from '@services/selectors';
 import { updateUser } from '@services/slices/user';
 import { useDispatch, useSelector } from '@services/store';
 
+import type { TUser } from '@utils-types';
+
 export const Profile = (): React.JSX.Element => {
-  const user = useSelector(selectUser)!;
+  const user = useSelector(selectUser);
+  if (!user) return <Navigate to="/login" replace />;
+  return <ProfileForm user={user} />;
+};
+
+const ProfileForm = ({ user }: { user: TUser }): React.JSX.Element => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => state.user.isLoading);
   const error = useSelector((state) =>
-    state.user.errorAction === 'user/update/rejected' ? state.user.error : null
+    state.user.errorAction === updateUser.rejected.type ? state.user.error : null
   );
 
   const [formValue, setFormValue] = useState({

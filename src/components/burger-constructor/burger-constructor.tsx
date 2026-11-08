@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { selectConstructor, selectUser } from '@services/selectors';
-import { createOrder, closeOrder, loadFeed, loadOrders } from '@services/slices/data';
+import { createOrder, closeOrder } from '@services/slices/order';
 import { useDispatch, useSelector } from '@services/store';
 
 import type { TConstructorIngredient } from '@utils-types';
@@ -32,10 +32,6 @@ export const BurgerConstructor = (): React.JSX.Element | null => {
     ];
     void dispatch(createOrder(ids))
       .unwrap()
-      .then(() => {
-        void dispatch(loadFeed());
-        void dispatch(loadOrders());
-      })
       .catch(() => undefined);
   };
   const closeOrderModal = (): void => {

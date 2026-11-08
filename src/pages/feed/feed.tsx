@@ -1,7 +1,7 @@
 import { Preloader } from '@ui';
 import { FeedUI } from '@ui-pages';
 
-import { loadFeed } from '@services/slices/data';
+import { loadFeed } from '@services/slices/feed';
 import { useDispatch, useSelector } from '@services/store';
 import { useOrders } from '@services/use-orders';
 export const Feed = (): React.JSX.Element => {
